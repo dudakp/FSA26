@@ -4,17 +4,15 @@ import sk.dudak.fsagame.ability.Ability;
 import sk.dudak.fsagame.ability.AbilityFactory;
 import sk.dudak.fsagame.ability.AbilityId;
 import sk.dudak.fsagame.ability.AbilityNotLearnedException;
-import sk.dudak.fsagame.character.CanUseAbility;
 import sk.dudak.fsagame.character.Character;
 import sk.dudak.fsagame.character.enemy.ai.AiCombatStrategy;
-import sk.dudak.fsagame.character.hero.Hero;
 import sk.dudak.fsagame.game.World;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
-public final class Enemy extends Character implements CanUseAbility {
+public final class Enemy extends Character {
 
     private static final Logger LOG = Logger.getLogger(Enemy.class.getName());
 

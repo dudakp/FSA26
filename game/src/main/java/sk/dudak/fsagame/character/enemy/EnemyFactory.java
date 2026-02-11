@@ -6,7 +6,7 @@ import sk.dudak.fsagame.game.Difficulty;
 
 import java.util.List;
 
-public class EnemyFactory {
+public final class EnemyFactory {
 
     private final Difficulty difficulty;
 

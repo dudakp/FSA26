@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
-public final class Hero extends Character implements CanUseAbility {
+public final class Hero extends Character {
 
     private static final Logger LOG = Logger.getLogger(Hero.class.getName());
 

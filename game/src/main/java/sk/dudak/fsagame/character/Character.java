@@ -4,7 +4,7 @@ import java.util.logging.Logger;
 
 import static sk.dudak.fsagame.character.CharacterState.DEAD;
 
-public abstract class Character implements CanDie {
+public abstract class Character implements CanDie, CanUseAbility {
 
     private static final Logger LOG = Logger.getLogger(Character.class.getName());
 
