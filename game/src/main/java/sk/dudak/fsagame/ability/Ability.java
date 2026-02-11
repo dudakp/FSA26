@@ -5,6 +5,8 @@ import sk.dudak.fsagame.character.Character;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import static sk.dudak.fsagame.character.CharacterState.DEAD;
+
 public abstract class Ability {
 
     private static final Logger LOG = Logger.getLogger(Ability.class.getName());
@@ -54,6 +56,15 @@ public abstract class Ability {
 
         return Optional.ofNullable(nextAbilityForm)
                 .map(a -> a.abilityId);
+    }
+
+    public void applyDamage(Character target, int damage) {
+        target.dealDamage(damage);
+        if (damage < 0) {
+            LOG.info("healed for %s to character %s, health now at: %d".formatted(-damage, target.getId(), target.getHealth()));
+        } else {
+            LOG.info("applied %s damage to character %s, health now at: %d".formatted(damage, target.getId(), target.getHealth()));
+        }
     }
 
     public void use(Character target) {

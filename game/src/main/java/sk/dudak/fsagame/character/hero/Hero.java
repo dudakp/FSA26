@@ -6,8 +6,10 @@ import sk.dudak.fsagame.ability.AbilityClass;
 import sk.dudak.fsagame.ability.AbilityId;
 import sk.dudak.fsagame.ability.AbilityNotLearnedException;
 import sk.dudak.fsagame.ability.AbilityView;
-import sk.dudak.fsagame.character.CanUseAbility;
 import sk.dudak.fsagame.character.Character;
+import sk.dudak.fsagame.character.CharacterHealth;
+import sk.dudak.fsagame.character.CharacterId;
+import sk.dudak.fsagame.character.CharacterState;
 import sk.dudak.fsagame.game.World;
 
 import java.util.Collection;
@@ -15,15 +17,19 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
-public final class Hero extends Character {
+public final class Hero implements Character {
 
     private static final Logger LOG = Logger.getLogger(Hero.class.getName());
 
+    private final CharacterId<Long> id;
+    private final CharacterHealth health;
+    private CharacterState state = CharacterState.ALIVE;
     private final AbilityTree abilityTree;
     private int xp = 0;
 
     public Hero(int health) {
-        super(HeroIdGenerator.INSTANCE, health);
+        this.id = HeroIdGenerator.INSTANCE.getNext();
+        this.health = new CharacterHealth(health);
         this.abilityTree = new AbilityTree(this);
     }
 
@@ -80,5 +86,28 @@ public final class Hero extends Character {
                 .filter(Predicate.not(Ability::isMaxLevel))
                 .map(ability -> ability.abilityId)
                 .toList();
+    }
+
+    @Override
+    public Integer getHealth() {
+        return health.getHealth();
+    }
+
+    @Override
+    public CharacterId<Long> getId() {
+        return id;
+    }
+
+    @Override
+    public CharacterState getState() {
+        return state;
+    }
+
+    @Override
+    public void dealDamage(int damage) {
+        this.state = this.health.dealDamage(damage, this);
+        if (CharacterState.DEAD.equals(this.state)) {
+            onCharacterDied();
+        }
     }
 }

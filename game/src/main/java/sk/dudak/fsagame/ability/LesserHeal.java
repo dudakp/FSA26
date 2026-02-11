@@ -12,6 +12,6 @@ public class LesserHeal extends Ability {
 
     @Override
     protected void applyEffect(Character target) {
-        target.applyDamage(level * (-5));
+        target.dealDamage(level * (-5));
     }
 }

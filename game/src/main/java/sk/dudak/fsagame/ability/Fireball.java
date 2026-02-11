@@ -15,7 +15,7 @@ public class Fireball extends Ability {
 
     @Override
     protected void applyEffect(Character target) {
-        target.applyDamage(calculateDamage());
+        target.dealDamage(calculateDamage());
     }
 
     int calculateDamage() {

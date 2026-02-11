@@ -34,8 +34,10 @@ void main() {
                         new InputStreamReader(System.in));
                 if (hero.getXp() > 0) {
                     IO.println("Able to upgrade abilities: %s".formatted(
-                            hero.upgradableAbilities())
-                    );
+                            usableAbilities.entrySet().stream()
+                                    .filter(a -> hero.upgradableAbilities().contains(a.getValue()))
+                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                    ));
                     IO.println("Select ability to upgrade: %s");
                     int abilityToUpgrade = Integer.parseInt(reader.readLine());
                     hero.upgradeAbility(usableAbilities.get(abilityToUpgrade));

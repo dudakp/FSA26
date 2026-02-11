@@ -15,7 +15,9 @@ public class Fireblast extends Ability {
 
     @Override
     protected void applyEffect(Character target) {
-        target.applyDoT(damage, 5);
+        for (int i = 0; i < 3; i++) {
+            target.dealDamage(damage);
+        }
     }
 
 }
