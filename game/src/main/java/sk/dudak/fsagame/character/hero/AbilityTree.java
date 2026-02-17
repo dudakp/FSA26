@@ -54,7 +54,7 @@ class AbilityTree {
         Optional<Ability> ability = getAbility(abilityId);
         if (ability.isEmpty()) {
             LOG.warning("Ability %s not yet learned".formatted(abilityId));
-            throw new AbilityNotLearnedException();
+            throw new AbilityNotLearnedException(abilityId);
         }
         Optional<AbilityId> classAfterUpgrade = ability.get().upgrade();
         if (classAfterUpgrade.isEmpty()) {

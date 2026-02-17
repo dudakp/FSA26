@@ -50,7 +50,7 @@ public final class Enemy implements Character {
                 .filter(a -> a.abilityId.equals(ability))
                 .findAny();
         if (abilityToUse.isEmpty()) {
-            throw new AbilityNotLearnedException();
+            throw new AbilityNotLearnedException(ability);
         }
         abilityToUse.get().use(target);
     }

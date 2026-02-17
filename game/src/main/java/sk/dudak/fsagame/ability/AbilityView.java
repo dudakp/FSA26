@@ -1,5 +1,7 @@
 package sk.dudak.fsagame.ability;
 
+import java.util.Optional;
+
 /**
  * Stateless snapshot view of ability
  *

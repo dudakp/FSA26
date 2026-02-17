@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 private static final Logger LOG = Logger.getLogger("entrypoint");
 
-void main() {
+void main() throws IOException, AbilityCannotBeLearnedException {
     LOG.info("Welcome to FSA game");
     LOG.info("initializing game world");
 
@@ -20,58 +20,68 @@ void main() {
     world.addHero(hero);
 
 
-    try {
-        LOG.info("Abilities to use: %s".formatted(hero.getLearnedAbilities()));
-        Map<Integer, AbilityId> usableAbilities = Map.ofEntries(
-                Map.entry(0, hero.learnAbility(AbilityId.FIREBALL)),
-                Map.entry(1, hero.learnAbility(AbilityId.LESSER_HEAL))
-        );
+    LOG.info("Abilities to use: %s".formatted(hero.getLearnedAbilities()));
+    Map<Integer, AbilityId> usableAbilities = Map.ofEntries(
+            Map.entry(0, hero.learnAbility(AbilityId.FIREBALL)),
+            Map.entry(1, hero.learnAbility(AbilityId.LESSER_HEAL))
+    );
 
-        int turnNum = 0;
-        while (!world.isGameOver()) {
-            if (turnNum % 2 == 0) {
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(System.in));
-                if (hero.getXp() > 0) {
-                    IO.println("Able to upgrade abilities: %s".formatted(
-                            usableAbilities.entrySet().stream()
-                                    .filter(a -> hero.upgradableAbilities().contains(a.getValue()))
-                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-                    ));
-                    IO.println("Select ability to upgrade: %s");
-                    int abilityToUpgrade = Integer.parseInt(reader.readLine());
-                    hero.upgradeAbility(usableAbilities.get(abilityToUpgrade));
-                    continue;
-                }
-
-                IO.println("It's your turn your health is: %d, your xp: %d \n current active enemy health is: %d, %d enemies remaining \n select ability to use: \n %s".formatted(
-                        hero.getHealth(),
-                        hero.getXp(),
-                        world.getActiveEnemy().getHealth(),
-                        world.getRemainingEnemies(),
-                        usableAbilities
+    int turnNum = 0;
+    while (!world.isGameOver()) {
+        if (turnNum % 2 == 0) {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(System.in));
+            if (hero.getXp() > 0) {
+                IO.println("Able to upgrade abilities: %s".formatted(
+                        usableAbilities.entrySet().stream()
+                                .filter(a -> hero.upgradableAbilities().contains(a.getValue()))
+                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
                 ));
-                int selectedAbility = Integer.parseInt(reader.readLine());
-
-                boolean killedEnemy = world.heroTurn(usableAbilities.get(selectedAbility));
-                if (killedEnemy) {
-                    LOG.info("enemy killed, you get extra move!");
-                    continue;
+                boolean abilityUpgraded = false;
+                while (!abilityUpgraded) {
+                    try {
+                        IO.println("Select ability to upgrade: %s");
+                        int abilityToUpgrade = Integer.parseInt(reader.readLine());
+                        hero.upgradeAbility(usableAbilities.get(abilityToUpgrade));
+                        abilityUpgraded = true;
+                    } catch (AbilityCannotBeLearnedException e) {
+                        IO.println("Ability %s cannot be upgraded".formatted(e.abilityId));
+                    } catch (AbilityNotLearnedException e) {
+                        IO.println("Ability %s not yet learned".formatted(e.abilityId));
+                    } catch (NotEnoughXpException e) {
+                        IO.println("Not enough xp points, unable to upgrade ability");
+                    }
                 }
-            } else {
-                world.enemyTurn();
+                continue;
             }
-            turnNum += 1;
-        }
-        if (world.getRemainingEnemies() == 0) {
-            LOG.info("you won!");
-        }
 
-    } catch (AbilityCannotBeLearnedException e) {
-        IO.println(e);
-        throw new RuntimeException(e);
-    } catch (AbilityNotLearnedException | IOException | NotEnoughXpException e) {
-        throw new RuntimeException(e);
+            IO.println("It's your turn your health is: %d, your xp: %d \n current active enemy health is: %d, %d enemies remaining \n select ability to use: \n %s".formatted(
+                    hero.getHealth(),
+                    hero.getXp(),
+                    world.getActiveEnemy().getHealth(),
+                    world.getRemainingEnemies(),
+                    usableAbilities
+            ));
+            int selectedAbility = Integer.parseInt(reader.readLine());
+
+            boolean killedEnemy = false;
+            try {
+                killedEnemy = world.heroTurn(usableAbilities.get(selectedAbility));
+            } catch (AbilityNotLearnedException e) {
+                throw new RuntimeException(e);
+            }
+            if (killedEnemy) {
+                LOG.info("enemy killed, you get extra move!");
+                continue;
+            }
+        } else {
+            world.enemyTurn();
+        }
+        turnNum += 1;
     }
+    if (world.getRemainingEnemies() == 0) {
+        LOG.info("you won!");
+    }
+
 
 }

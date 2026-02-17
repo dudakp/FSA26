@@ -38,7 +38,7 @@ public final class Hero implements Character {
         Optional<Ability> abilityToUse = abilityTree.getAbility(ability);
         if (abilityToUse.isEmpty()) {
             LOG.warning("Ability: %s, not yed learned".formatted(ability));
-            throw new AbilityNotLearnedException();
+            throw new AbilityNotLearnedException(ability);
         }
         LOG.info("Using ability %s".formatted(abilityToUse.get().asView()));
         if (AbilityClass.DAMAGING.equals(abilityToUse.get().abilityClass)) {
